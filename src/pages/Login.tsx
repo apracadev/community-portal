@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -21,22 +22,28 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // Will implement with Supabase once connected
-      console.log("Form submitted:", formData);
-
-      toast({
-        title: "Login successful!",
-        description: "Welcome back!",
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: `${formData.username}@praca.temp`,
+        password: formData.password,
       });
 
-      setTimeout(() => {
-        navigate("/home");
-      }, 1000);
-    } catch (error) {
+      if (error) throw error;
+
+      if (data) {
+        toast({
+          title: "Login successful!",
+          description: "Welcome back!",
+        });
+
+        setTimeout(() => {
+          navigate("/home");
+        }, 1000);
+      }
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Login failed",
-        description: "Invalid username or password.",
+        description: error.message || "Invalid username or password.",
       });
     } finally {
       setIsLoading(false);

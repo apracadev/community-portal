@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -23,22 +24,35 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      // Will implement with Supabase once connected
-      console.log("Form submitted:", formData);
-      
-      toast({
-        title: "Registration successful!",
-        description: "Redirecting you to login...",
+      const { data, error } = await supabase.auth.signUp({
+        email: `${formData.username}@praca.temp`, // Using temporary email format
+        password: formData.password,
+        options: {
+          data: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            username: formData.username,
+          },
+        },
       });
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
-    } catch (error) {
+      if (error) throw error;
+
+      if (data) {
+        toast({
+          title: "Registration successful!",
+          description: "Redirecting you to login...",
+        });
+
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      }
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Registration failed",
-        description: "Please try again later.",
+        description: error.message || "Please try again later.",
       });
     } finally {
       setIsLoading(false);
