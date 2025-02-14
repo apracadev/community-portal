@@ -41,23 +41,15 @@ const Register = () => {
       if (signUpError) throw signUpError;
 
       if (signUpData) {
-        // Immediately sign in after successful registration
-        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email: formData.email,
-          password: formData.password,
+        toast({
+          title: "Registration successful!",
+          description: "Please log in with your credentials.",
         });
 
-        if (signInError) throw signInError;
-
-        if (signInData) {
-          toast({
-            title: "Registration successful!",
-            description: "Welcome to Praca!",
-          });
-
-          // Navigate to home page after successful registration and login
-          navigate("/home");
-        }
+        // Navigate to login page after successful registration
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
       }
     } catch (error: any) {
       toast({
