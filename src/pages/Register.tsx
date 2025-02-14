@@ -34,6 +34,7 @@ const Register = () => {
             lastName: formData.lastName,
             username: formData.username,
           },
+          emailRedirectTo: `${window.location.origin}/login`,
         },
       });
 
@@ -45,9 +46,8 @@ const Register = () => {
           description: "Redirecting you to login...",
         });
 
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+        // Immediately navigate to login page
+        navigate("/login");
       }
     } catch (error: any) {
       toast({
