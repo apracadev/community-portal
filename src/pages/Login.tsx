@@ -22,24 +22,32 @@ const Login = () => {
     setIsLoading(true);
 
     try {
+      console.log("Attempting login with:", { email: formData.email }); // Debug log
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
+        email: formData.email.trim(), // Ensure no whitespace
         password: formData.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Login error details:", error); // Debug log
+        throw error;
+      }
 
-      if (data) {
+      if (data?.user) {
+        console.log("Login successful:", data.user); // Debug log
+        
         toast({
           title: "Login successful!",
           description: "Welcome back!",
         });
 
-        setTimeout(() => {
-          navigate("/home");
-        }, 1000);
+        // Navigate immediately without delay
+        navigate("/home");
       }
     } catch (error: any) {
+      console.error("Full error object:", error); // Debug log
+      
       toast({
         variant: "destructive",
         title: "Login failed",
@@ -79,6 +87,7 @@ const Login = () => {
                 className="input-fade-in"
                 value={formData.email}
                 onChange={handleChange}
+                autoComplete="email"
               />
             </div>
 
@@ -92,6 +101,7 @@ const Login = () => {
                 className="input-fade-in"
                 value={formData.password}
                 onChange={handleChange}
+                autoComplete="current-password"
               />
             </div>
           </div>
