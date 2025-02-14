@@ -16,6 +16,7 @@ const Register = () => {
     firstName: "",
     lastName: "",
     username: "",
+    email: "",
     password: "",
   });
 
@@ -25,7 +26,7 @@ const Register = () => {
 
     try {
       const { data, error } = await supabase.auth.signUp({
-        email: `${formData.username}@praca.temp`, // Using temporary email format
+        email: formData.email,
         password: formData.password,
         options: {
           data: {
@@ -113,6 +114,19 @@ const Register = () => {
                 required
                 className="input-fade-in"
                 value={formData.username}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                className="input-fade-in"
+                value={formData.email}
                 onChange={handleChange}
               />
             </div>

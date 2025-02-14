@@ -13,7 +13,7 @@ const Login = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -23,7 +23,7 @@ const Login = () => {
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: `${formData.username}@praca.temp`,
+        email: formData.email,
         password: formData.password,
       });
 
@@ -43,7 +43,7 @@ const Login = () => {
       toast({
         variant: "destructive",
         title: "Login failed",
-        description: error.message || "Invalid username or password.",
+        description: error.message || "Invalid email or password.",
       });
     } finally {
       setIsLoading(false);
@@ -61,23 +61,23 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-accent to-background">
       <div className="w-full max-w-md space-y-8 form-fade-in">
         <div className="text-center">
-          <h2 className="text-4xl font-bold tracking-tight">Welcome back</h2>
+          <h2 className="text-4xl font-bold tracking-tight">Welcome Back</h2>
           <p className="mt-2 text-muted-foreground">
-            Log in to your Praca account
+            Log in to your account
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="glass-form p-8 rounded-xl space-y-6">
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="username"
-                name="username"
-                type="text"
+                id="email"
+                name="email"
+                type="email"
                 required
                 className="input-fade-in"
-                value={formData.username}
+                value={formData.email}
                 onChange={handleChange}
               />
             </div>
@@ -105,7 +105,7 @@ const Login = () => {
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <>
-                Log in
+                Login
                 <ArrowRight className="ml-2 h-4 w-4" />
               </>
             )}
