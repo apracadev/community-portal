@@ -25,7 +25,8 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      // First sign up the user
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -34,20 +35,29 @@ const Register = () => {
             lastName: formData.lastName,
             username: formData.username,
           },
-          emailRedirectTo: `${window.location.origin}/login`,
         },
       });
 
-      if (error) throw error;
+      if (signUpError) throw signUpError;
 
-      if (data) {
-        toast({
-          title: "Registration successful!",
-          description: "Redirecting you to login...",
+      if (signUpData) {
+        // Immediately sign in after successful registration
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
         });
 
-        // Immediately navigate to login page
-        navigate("/login");
+        if (signInError) throw signInError;
+
+        if (signInData) {
+          toast({
+            title: "Registration successful!",
+            description: "Welcome to Praca!",
+          });
+
+          // Navigate to home page after successful registration and login
+          navigate("/home");
+        }
       }
     } catch (error: any) {
       toast({
