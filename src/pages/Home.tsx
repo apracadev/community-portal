@@ -1,23 +1,52 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import type { Database } from "@/integrations/supabase/types";
+
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 const Home = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     checkUser();
   }, []);
 
   const checkUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/login");
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+
+      // Fetch user profile data
+      const { data: profileData, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        throw error;
+      }
+
+      if (profileData) {
+        setProfile(profileData);
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error fetching user data",
+        description: error.message,
+      });
     }
   };
 
@@ -51,10 +80,20 @@ const Home = () => {
           </Button>
         </div>
         
-        <div className="glass-form p-8 rounded-xl">
+        <div className="glass-form p-8 rounded-xl space-y-4">
           <p className="text-lg text-muted-foreground">
             This is your home page. The platform is ready for you to start building your community!
           </p>
+          
+          {profile && (
+            <div className="mt-4 p-4 bg-accent/10 rounded-lg">
+              <p className="text-sm text-muted-foreground">Logged in as:</p>
+              <p className="text-lg font-medium">
+                {profile.first_name} {profile.last_name}
+              </p>
+              <p className="text-sm text-muted-foreground">@{profile.username}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
