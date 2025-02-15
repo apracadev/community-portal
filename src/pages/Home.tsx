@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/integrations/supabase/types";
 
-type Profile = Database['public']['Tables']['profiles']['Row'];
+type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 const Home = () => {
   const navigate = useNavigate();
@@ -20,7 +19,9 @@ const Home = () => {
 
   const checkUser = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         navigate("/login");
         return;
@@ -28,13 +29,13 @@ const Home = () => {
 
       // Fetch user profile data
       const { data: profileData, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
+        .from("profiles")
+        .select("*")
+        .eq("id", session.user.id)
         .single();
 
       if (error) {
-        console.error('Error fetching profile:', error);
+        console.error("Error fetching profile:", error);
         throw error;
       }
 
@@ -79,19 +80,23 @@ const Home = () => {
             Logout
           </Button>
         </div>
-        
+
         <div className="glass-form p-8 rounded-xl space-y-4">
           <p className="text-lg text-muted-foreground">
-            This is your home page. The platform is ready for you to start building your community!
+            This is your home page. The platform is ready for you to start
+            building your community!
           </p>
-          
+
           {profile && (
             <div className="mt-4 p-4 bg-accent/10 rounded-lg">
               <p className="text-sm text-muted-foreground">Logged in as:</p>
               <p className="text-lg font-medium">
-                {profile.first_name} {profile.last_name}
+                {profile.first_name} {profile.last_name}, also known as @
+                {profile.username}
               </p>
-              <p className="text-sm text-muted-foreground">@{profile.username}</p>
+              <p className="text-sm text-muted-foreground">
+                Welcome to the BH Carnaval 2025 Test 1!
+              </p>
             </div>
           )}
         </div>
